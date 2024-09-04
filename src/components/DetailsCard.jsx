@@ -26,7 +26,7 @@ const DetailsCard = () => {
     let intervalId;
 
     if (isIntervalRunning) {
-      intervalId = setInterval(fetchData, 1000);
+      intervalId = setInterval(fetchData, 100);
     }
 
     return () => {
