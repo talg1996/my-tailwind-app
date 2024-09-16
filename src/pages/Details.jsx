@@ -3,7 +3,7 @@
 import React from "react";
 import logo from "./logo.png";
 
-const Live = () => {
+const Details  = () => {
   return (
     <div className="bg-white p-6 rounded-lg  max-w-6xl mx-auto">
       <div className="flex justify-center mb-6">
@@ -48,4 +48,4 @@ const Live = () => {
   );
 };
 
-export default Live;
+export default Details ;
