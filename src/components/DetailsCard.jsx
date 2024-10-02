@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { GiDeliveryDrone } from "react-icons/gi";
 import { AiOutlineSound } from "react-icons/ai";
-import { BsCameraVideo } from "react-icons/bs";
-import { FaCheck } from "react-icons/fa";
 import axios from "axios";
 
 const DetailsCard = () => {
@@ -11,34 +9,29 @@ const DetailsCard = () => {
     DronesDetectedCam2: 0,
   });
 
-  const [isIntervalRunning, setIsIntervalRunning] = useState(true);
-
-  const fetchData = useCallback(async () => {
+  const fetchData = async () => {
     try {
       const response = await axios.get("http://localhost:5000/live_data");
       setDroneCounts(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  }, []);
+  };
 
   useEffect(() => {
-    let intervalId;
+    // קריאה ל-fetchData בהתחלה
+    fetchData();
 
-    if (isIntervalRunning) {
-      intervalId = setInterval(fetchData, 100);
-    }
+    // קובע את ה-interval לקריאה כל 100 מילי-שניות
+    const intervalId = setInterval(() => {
+      fetchData();
+    }, 100);
 
+    // מנקה את ה-interval כש-component מתאפס
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
+      clearInterval(intervalId);
     };
-  }, [isIntervalRunning, fetchData]);
-
-  const toggleInterval = () => {
-    setIsIntervalRunning((prev) => !prev);
-  };
+  }, []); // לא צריך לתלות את fetchData כי היא לא תשתנה
 
   const DetailItem = ({ label, value, icon: Icon, color }) => (
     <div className="mb-4 flex items-center justify-between text-gray-600">
@@ -65,12 +58,6 @@ const DetailsCard = () => {
           icon={GiDeliveryDrone}
         />
         <DetailItem
-          label="Message sent:"
-          value="Yes"
-          icon={FaCheck}
-          color="text-green-500"
-        />
-        <DetailItem
           label="Buzzer:"
           value={
             droneCounts.DronesDetectedCam1 > 0 ||
@@ -81,23 +68,7 @@ const DetailsCard = () => {
           icon={AiOutlineSound}
           color="text-red-500"
         />
-        <DetailItem
-          label="Camera:"
-          value="Online"
-          icon={BsCameraVideo}
-          color="text-blue-500"
-        />
       </div>
-      <button
-        className={`mt-4 px-4 py-2 rounded-lg text-white focus:outline-none ${
-          isIntervalRunning
-            ? "bg-red-500 hover:bg-red-600"
-            : "bg-green-500 hover:bg-green-600"
-        }`}
-        onClick={toggleInterval}
-      >
-        {isIntervalRunning ? "Pause" : "Resume"}
-      </button>
     </div>
   );
 };
